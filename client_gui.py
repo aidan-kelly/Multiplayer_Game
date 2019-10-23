@@ -17,9 +17,16 @@
 
 from tkinter import *
 import sys
+import socket
 
 HEIGHT = 700
 WIDTH = 1000
+
+TARGET_IP = '127.0.0.1'
+TARGET_PORT = 1234
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((TARGET_IP, TARGET_PORT))
 
 #set up our base window
 root=Tk()
@@ -47,6 +54,7 @@ def func(event):
     
     #output the text
     print(enterdText)
+    client_socket.send(bytes(enterdText, 'utf-8'))
     textbox.see("end")
     ourInput.delete(0, END)
     
