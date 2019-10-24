@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
+
 from tkinter import *
 import sys
 import socket
+import threading
 
 ###
 ### TODO need to implement another thread to accept incoming data from the server
@@ -31,6 +34,12 @@ ourInput = Entry(root)
 ourInput.pack(fill=X, side=BOTTOM)
 ourInput.focus_set()
 
+#create a seperate thread that will receive data
+def receiveDataThread(client_socket):
+    while True:
+        msg = client_socket.recv(1024).decode('utf-8')
+        print(msg)
+
 #This function will send off data
 def returnPressed(event):
 
@@ -42,7 +51,7 @@ def returnPressed(event):
         sys.exit()
     
     #output the text
-    print(enterdText)
+    print(f"YOU> {enterdText}")
 
     #send the data to the server
     client_socket.send(bytes(enterdText, 'utf-8'))
@@ -66,6 +75,9 @@ def redirector(inputStr):
 
 #on print inserts data to text box
 sys.stdout.write = redirector #whenever sys.stdout.write is called, redirector is called.
+
+receiveThread = threading.Thread(target=receiveDataThread, args=(client_socket,))
+receiveThread.start()
 
 #start up the GUI
 root.mainloop()
