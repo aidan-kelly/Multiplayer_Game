@@ -1,30 +1,19 @@
-# import tkinter
-
-# HEIGHT = 700
-# WIDTH = 1000
-
-# root = tkinter.Tk()
-# root.title("Chatroom")
-# root.geometry(f"{WIDTH}x{HEIGHT}")
-
-# termf = tkinter.Frame(root, height=650, width=950)
-# termf.grid(column=0, row=0)
-
-# text = tkinter.Entry(root, width=WIDTH)
-# text.grid(column=0, row=1)
-
-# root.mainloop()
-
 from tkinter import *
 import sys
 import socket
 
+###
+### TODO need to implement another thread to accept incoming data from the server
+###      will need to display this data within the console window. 
+###
+
+#vars for width and height.
 HEIGHT = 700
 WIDTH = 1000
 
+#basic socket setup
 TARGET_IP = '127.0.0.1'
 TARGET_PORT = 1234
-
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((TARGET_IP, TARGET_PORT))
 
@@ -43,7 +32,7 @@ ourInput.pack(fill=X, side=BOTTOM)
 ourInput.focus_set()
 
 #This function will send off data
-def func(event):
+def returnPressed(event):
 
     #grab the input
     enterdText = ourInput.get()
@@ -54,13 +43,22 @@ def func(event):
     
     #output the text
     print(enterdText)
+
+    #send the data to the server
     client_socket.send(bytes(enterdText, 'utf-8'))
+    ###
+    ### TODO in future, need to check this data before we send it to the server
+    ###
+
+    #ensure that the last entry in client is shown
     textbox.see("end")
+
+    #clear the input field
     ourInput.delete(0, END)
     
 
 #makes it so data is sent on pressing of RETURN key
-root.bind("<Return>", func)
+root.bind("<Return>", returnPressed)
 
 #makes it so that any print statements are printed to the textbox
 def redirector(inputStr):
