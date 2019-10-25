@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import socket
 import threading
 
@@ -18,15 +17,23 @@ ackNum = 0
 numConnection = 0
 clients = []
 
+#function to send and receive data to client
 def handleClient(client_socket):
     while True:
+        message = ""
         message = client_socket.recv(1024).decode('utf-8')
         print(message)
         for c in clients:
             if c.getpeername() != client_socket.getpeername():
                 #send back an ack with an id
                 #ack = f"ACK{ackNum}!"
-                message = f"{c.getpeername()}> {message}"
+                #message = f"{c.getpeername()}> {message}"
+
+                ###
+                ### TODO need to add the sender's name in from of message.
+                ###      ex: <NAME>: Message goes here.
+                ###
+
                 c.send(bytes(message, 'utf-8'))
 
 
@@ -34,22 +41,11 @@ def handleClient(client_socket):
 while True:
 
     #accepts one connection for testing purposes
-    if numConnection != 2:
-        client, addr = server_socket.accept()
-        numConnection +=1
-        print(f"[*] New connection from {addr[0]}:{addr[1]}")
-        clients.append(client)
+    client, addr = server_socket.accept()
+    numConnection +=1
+    print(f"[*] New connection from {addr[0]}:{addr[1]}")
+    clients.append(client)
 
-        handleClientThread = threading.Thread(target=handleClient, args=(client,))
-        handleClientThread.start()
-
-    # #recieve message from client
-    # message = client.recv(1024).decode('utf-8')
-    # print(message)
-
-    # for c in clients:
-    #     if c != client:
-    #         #send back an ack with an id
-    #         ack = f"ACK{ackNum}!"
-    #         client.send(bytes(ack, 'utf-8'))
-    #         ackNum += 1
+    #spawn new thread to handle client
+    handleClientThread = threading.Thread(target=handleClient, args=(client,))
+    handleClientThread.start()

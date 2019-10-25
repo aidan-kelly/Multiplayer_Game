@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-
 from tkinter import *
 import sys
 import socket
 import threading
 
 ###
-### TODO need to implement another thread to accept incoming data from the server
-###      will need to display this data within the console window. 
-###
+### TODO Need to store user's name somewhere and also send to server
+###      
 
 #vars for width and height.
 HEIGHT = 700
@@ -55,6 +53,7 @@ def returnPressed(event):
 
     #send the data to the server
     client_socket.send(bytes(enterdText, 'utf-8'))
+
     ###
     ### TODO in future, need to check this data before we send it to the server
     ###
@@ -76,7 +75,8 @@ def redirector(inputStr):
 #on print inserts data to text box
 sys.stdout.write = redirector #whenever sys.stdout.write is called, redirector is called.
 
-receiveThread = threading.Thread(target=receiveDataThread, args=(client_socket,))
+#spawn new thread to receive data from server
+receiveThread = threading.Thread(target=receiveDataThread, daemon=True, args=(client_socket,))
 receiveThread.start()
 
 #start up the GUI
