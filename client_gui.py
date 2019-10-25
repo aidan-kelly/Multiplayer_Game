@@ -12,6 +12,8 @@ import threading
 HEIGHT = 700
 WIDTH = 1000
 
+NAME = ""
+
 #basic socket setup
 TARGET_IP = '127.0.0.1'
 TARGET_PORT = 1234
@@ -41,29 +43,45 @@ def receiveDataThread(client_socket):
 #This function will send off data
 def returnPressed(event):
 
-    #grab the input
-    enterdText = ourInput.get()
+    global NAME
 
-    #check to see if user wants to exit
-    if enterdText == "exit":
-        sys.exit()
-    
-    #output the text
-    print(f"YOU> {enterdText}")
+    #user hasn't set his username
+    if NAME == "":
+        NAME = ourInput.get()
 
-    #send the data to the server
-    client_socket.send(bytes(enterdText, 'utf-8'))
+        #clear the input field
+        ourInput.delete(0, END)
+        client_socket.send(bytes(f"NAME~{NAME}",'utf-8'))
 
-    ###
-    ### TODO in future, need to check this data before we send it to the server
-    ###
+        #spawn new thread to receive data from server
+        receiveThread = threading.Thread(target=receiveDataThread, daemon=True, args=(client_socket,))
+        receiveThread.start()
 
-    #ensure that the last entry in client is shown
-    textbox.see("end")
+    else:
 
-    #clear the input field
-    ourInput.delete(0, END)
-    
+        #grab the input
+        enterdText = ourInput.get()
+
+        #check to see if user wants to exit
+        if enterdText == "exit":
+            sys.exit()
+        
+        #output the text
+        print(f"YOU> {enterdText}")
+
+        #send the data to the server
+        client_socket.send(bytes(enterdText, 'utf-8'))
+
+        ###
+        ### TODO in future, need to check this data before we send it to the server
+        ###
+
+        #ensure that the last entry in client is shown
+        textbox.see("end")
+
+        #clear the input field
+        ourInput.delete(0, END)
+        
 
 #makes it so data is sent on pressing of RETURN key
 root.bind("<Return>", returnPressed)
@@ -75,9 +93,7 @@ def redirector(inputStr):
 #on print inserts data to text box
 sys.stdout.write = redirector #whenever sys.stdout.write is called, redirector is called.
 
-#spawn new thread to receive data from server
-receiveThread = threading.Thread(target=receiveDataThread, daemon=True, args=(client_socket,))
-receiveThread.start()
+print("Please enter your username: ")
 
 #start up the GUI
 root.mainloop()

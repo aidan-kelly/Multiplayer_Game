@@ -17,24 +17,36 @@ ackNum = 0
 numConnection = 0
 clients = []
 
+def broadcast(client_socket, message):
+    if(client_socket == 'SERVER'):
+        for c in clients:
+            c.send(bytes(message, 'utf-8'))
+    else:
+        print("IN USER BIT")
+        for c in clients:
+            if c.getpeername() != client_socket.getpeername():
+                c.send(bytes(message, 'utf-8'))
+
+
 #function to send and receive data to client
 def handleClient(client_socket):
     while True:
         message = ""
         message = client_socket.recv(1024).decode('utf-8')
         print(message)
-        for c in clients:
-            if c.getpeername() != client_socket.getpeername():
-                #send back an ack with an id
-                #ack = f"ACK{ackNum}!"
-                #message = f"{c.getpeername()}> {message}"
 
-                ###
-                ### TODO need to add the sender's name in from of message.
-                ###      ex: <NAME>: Message goes here.
-                ###
+        tester = message.split('~')
 
-                c.send(bytes(message, 'utf-8'))
+        if(tester[0] == 'NAME'):
+            broadcast("SERVER", f"SERVER> {tester[1]} joined the chat.")
+
+        else:
+            broadcast(client_socket, message)
+
+                    ###
+                    ### TODO need to add the sender's name in from of message.
+                    ###      ex: <NAME>: Message goes here.
+                    ###
 
 
 #main server loop
