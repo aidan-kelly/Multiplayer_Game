@@ -40,9 +40,16 @@ def broadcast(client_socket, message):
 #function to send and receive data to client
 def handleClient(client_socket):
     while True:
-        message = ""
-        message = client_socket.recv(1024).decode('utf-8')
-        print(message)
+        try:
+            message = ""
+            message = client_socket.recv(1024).decode('utf-8')
+            print(message)
+        except ConnectionResetError:
+            print(f"[-] Connection closed from {client_socket.getpeername()}")
+            CLIENTS.remove(client_socket)
+            broadcast("SERVER", f"SERVER> {ADDRESS_TO_NAME[client_socket.getpeername()]} has left the chat.")
+            ADDRESS_TO_NAME.pop(client_socket.getpeername(), None)
+            return
 
         #checks for format of message. 
         tester = message.split('~')

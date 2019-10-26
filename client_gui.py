@@ -64,6 +64,7 @@ def returnPressed(event):
 
         #check to see if user wants to exit
         if enterdText == "exit":
+            client_socket.close()
             sys.exit()
         
         #output the text
