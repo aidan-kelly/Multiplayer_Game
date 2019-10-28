@@ -40,11 +40,17 @@ def broadcast(client_socket, message):
 #function to send and receive data to client
 def handleClient(client_socket):
     while True:
+
+        #receive a message
         try:
             message = ""
             message = client_socket.recv(1024).decode('utf-8')
             print(message)
+
+        #if a client leaves
         except ConnectionResetError:
+
+            #remove the clients from our lists and inform the other connections
             print(f"[-] Connection closed from {client_socket.getpeername()}")
             CLIENTS.remove(client_socket)
             broadcast("SERVER", f"SERVER> {ADDRESS_TO_NAME[client_socket.getpeername()]} has left the chat.")
