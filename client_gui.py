@@ -63,7 +63,10 @@ def returnPressed(event):
         enterdText = ourInput.get()
 
         #check to see if user wants to exit
-        if enterdText == "exit":
+        if enterdText.lower() == "exit":
+
+            #inform server that we are leaving and exit
+            client_socket.send(bytes(enterdText, 'utf-8'))
             client_socket.close()
             sys.exit()
         
