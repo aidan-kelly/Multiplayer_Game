@@ -2,6 +2,13 @@
 import socket
 import threading
 
+'''
+TODO    need to add the game loop to this code.
+        make it so that clients can only enter in choices that we present.
+        possibly add some new classes to represent in game classes.
+            at first though, have the one basic class and one basic option
+        need to ensure that only 2 players are connected.
+'''
 #basic socket setup
 OUR_IP = '127.0.0.1'
 OUR_PORT = 1234
